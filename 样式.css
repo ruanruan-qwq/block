@@ -3,7 +3,9 @@
 .container{
     width: 200px;
     height: 360px;
-    background-color: pink;
+    /* background-color: pink; */
+    background: url('./背景.webp') no-repeat;
+    background-size: 200px 360px;
     border: 1px solid black;
 
     margin-left: 550px;
@@ -15,10 +17,11 @@
 .inside{
     width: 20px;
     height: 20px;
-    background-color: bisque;
+    background: url(./方块.webp) no-repeat;
+    background-size: 20px 20px;
 
     box-sizing: border-box;
-    border: 1px solid black;
+    border: 1px solid rgba(0, 0, 0, 0);
 
     position: absolute;
 }
@@ -28,8 +31,8 @@
     width: 20px;
     height: 20px;
 
-    background-color:grey;
-    border: 1px solid black;
+    background-color: rgba(0, 0, 0, 0);
+    border: 1px solid pink;
 
     position: absolute;
 }

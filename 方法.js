@@ -10,35 +10,200 @@ var Row = 18;
 var Column = 10;
 
 // 定义16宫格所在的位置
-// gridX : row
-// gridY : col
+// gridX : y
+// gridY : x
 var gridX = 0;
 var gridY = 0;
 
+// 计时器
+var timer = null ;
+
 // 定义16宫格内 方块的位置
 var Models = [
-    // 第一个样式 L
+    // 第一个样式 倒L
     {
         0:{
-            row:1,
-            col:2,
+            y:1,
+            x:2,
         },
 
         1:{
-            row:2,
-            col:2,
+            y:2,
+            x:2,
         },
 
         2:{
-            row:2,
-            col:1, 
+            y:2,
+            x:1, 
         },
 
         3:{
-            row:2,
-            col:0, 
+            y:2,
+            x:0, 
         },
-    }
+    },
+
+    // 第二个样式(凸)
+    {
+        0:{
+            y:1,
+            x:1,
+        },
+
+        1:{
+            y:2,
+            x:0,
+        },
+
+        2:{
+            y:2,
+            x:1,
+        },
+
+        3:{
+            y:2,
+            x:2,
+        },
+    },
+
+    // 第三个样式(一)
+    {
+        0:{
+            y:1,
+            x:0,
+        },
+
+        1:{
+            y:1,
+            x:1,
+        },
+
+        2:{
+            y:1,
+            x:2,
+        },
+
+        3:{
+            y:1,
+            x:3,
+        },
+    },
+
+    // 第四个样式(田)
+    {
+        0:{
+            y:0,
+            x:0,
+        },
+
+        1:{
+            y:0,
+            x:1,
+        },
+
+        2:{
+            y:1,
+            x:0,
+        },
+
+        3:{
+            y:1,
+            x:1,
+        },
+    },
+
+    // 第五个样式(Z)
+    {
+        0:{
+            y:0,
+            x:2,
+        },
+
+        1:{
+            y:0,
+            x:1,
+        },
+
+        2:{
+            y:1,
+            x:1,
+        },
+
+        3:{
+            y:1,
+            x:0,
+        },
+    },
+
+    // 第六个样式 (N)
+    {
+        0:{
+            y:0,
+            x:0,
+        },
+
+        1:{
+            y:1,
+            x:0,
+        },
+
+        2:{
+            y:1,
+            x:1,
+        },
+
+        3:{
+            y:2,
+            x:1,
+        },
+    },
+
+    // 第七个样式(立着的 凸)
+    {
+        0:{
+            y:0,
+            x:0,
+        },
+
+        1:{
+            y:1,
+            x:0,
+        },
+
+        2:{
+            y:2,
+            x:0,
+        },
+
+        3:{
+            y:1,
+            x:1,
+        },
+    },
+
+    // 第八个样式 (L)
+    {
+        0:{
+            y:0,
+            x:0,
+        },
+
+        1:{
+            y:1,
+            x:0,
+        },
+
+        2:{
+            y:2,
+            x:0,
+        },
+
+        3:{
+            y:2,
+            x:1,
+        },
+    },
+
 ]
 
 // 当前的模型数据
@@ -58,12 +223,20 @@ function call () {
 // 生成对应的模型
 function createModel () {
 
+    // 在创建新模型之前检测，游戏是否已经结束了
+    if (isGameover()){
+        Gameover();
+        return;
+    };
+
     // 初始化16宫格的位置
     gridX = 0;
     gridY = 0;
 
     // 确定使用的模型
-    currentModel =Models[0];
+    // 随机数从 0 开始，一直到Models.length-1
+    currentModel =Models[_.random(0,Models.length-1)];
+    // currentModel = Models[7];
 
     // 根据对应的数据，创建块元素
     // 使用 for 循环来遍历确定使用的模型中的所有数据源
@@ -79,8 +252,12 @@ function createModel () {
         // Node.appendChild() 方法将一个节点附加到指定父节点的子节点列表的末尾处。
         document.getElementById('node').appendChild(dynamicDiv);
     }
+
     // 创建完对应的块元素之后 定位块元素的位置
     locationBlocks();
+
+    // 自动降落
+    automaticDown();
 }
 
 // 根据数据源定位块元素的位置
@@ -106,15 +283,15 @@ function locationBlocks () {
         var blockModel = currentModel[i];
 
         // 根据每个块元素对应的数据，来指定块元素的位置
-        // row 1 * 20 + px = 20px
+        // y 1 * 20 + px = 20px
 
         // 每个块元素的值由两个值确定
         // 1. 十六宫格的位置 gridX
         // 2. 块元素在16宫格内的位置
-        Single_block_element.style.top = (gridX+blockModel.row) * distance + 'px';
+        Single_block_element.style.top = (gridY+blockModel.y) * distance + 'px';
 
-        // col 2 * 20 + px = 40px
-        Single_block_element.style.left = (gridY+blockModel.col) * distance + 'px';
+        // x 2 * 20 + px = 40px
+        Single_block_element.style.left = (gridX+blockModel.x) * distance + 'px';
     }
 }
 
@@ -157,17 +334,17 @@ function OnKeyDown () {
 
                 // 调用 locationBlocks 函数，确定方块的位置
 
-                // Single_block_element.style.top = (gridX+blockModel.row) * distance + 'px';
-                // (gridX -1 + blockModel.row 16宫格内 单个方块的模型数据中的 行) * distance 20 + px
+                // Single_block_element.style.top = (gridX+blockModel.y) * distance + 'px';
+                // (gridX -1 + blockModel.y 16宫格内 单个方块的模型数据中的 行) * distance 20 + px
 
-                move(0,1);
+                move(1,0);
                 console.log('右');
                 break;
 
             case 40:
                 // inside.style.top = inside.offsetTop + distance + 'px';
 
-                move(1,0);
+                move(0,1);
                 // Touch_bottom();
                 console.log('下');
                 break;
@@ -175,7 +352,7 @@ function OnKeyDown () {
             case 37:
                 // inside.style.left = inside.offsetLeft - distance + 'px';
 
-                move(0,-1);
+                move(-1,0);
                 console.log('左');
                 break;
 
@@ -197,8 +374,8 @@ function move (x,y) {
         
         // y = 16宫格的位置 + y 移动的距离
         // if (x !== 0){
-        //     // 将模型固定在底部
-        //     Touch_bottom();
+            // 将模型固定在底部
+            Touch_bottom();
         // }
 
         // 如果 iscollision() 方法返回为true，则直接 return 掉move方法
@@ -231,12 +408,12 @@ function rotate () {
     //    声明一个 blockModel 拿到数据源
         var BlockModel = clonecurrentModel[key];
 
-        // 后面的算法会改变 currentModel.row 的值， 声明一个对象保存下来
-        var Row1 = BlockModel.row
+        // 后面的算法会改变 currentModel.y 的值， 声明一个对象保存下来
+        var Row1 = BlockModel.y
 
         // 实现算法
-        BlockModel.row = BlockModel.col;
-        BlockModel.col = 3 - Row1;
+        BlockModel.y = BlockModel.x;
+        BlockModel.x = 3 - Row1;
     }
 
     // 判断是否触碰,如果旋转之后发生了触碰 那么就不需要此次旋转了
@@ -273,16 +450,16 @@ function Internal_movement () {
         var BLockModel = currentModel[key];
 
         // 如果 模型数据的行 + 16宫格 < leftBound 0 的话， 16宫格++
-        if ((BLockModel.col + gridY) < leftBound){
-            gridY++;
+        if ((BLockModel.x + gridX) < leftBound){
+            gridX++;
         };
 
-        if((gridY + BLockModel.col) >= rightBound){
-            gridY--;
-        };
-
-        if((BLockModel.row + gridX) >= bottomBound){
+        if((gridX + BLockModel.x) >= rightBound){
             gridX--;
+        };
+
+        if((BLockModel.y + gridY) >= bottomBound){
+            gridY--;
             Touch_bottom();
         };
         
@@ -306,18 +483,21 @@ function Touch_bottom () {
         // 声明一个新的模型用来储存数据模型
         var BLOckModel = currentModel[i];
         // Fixed_module[0_0] = New_model  将新的模型数据储存到被固定模型中
-        Fixed_module[(gridX + BLOckModel.row) + '_' + (gridY + BLOckModel.col)] = New_model;
+        Fixed_module[(gridY + BLOckModel.y) + '_' + (gridX + BLOckModel.x)] = New_model;
     }
 
     // 生成新的模型
-    createModel();    
+    createModel();   
+    
+    // 判断该行是否被铺满了
+    Overspread();
 }
 
 
 // 判断模块与模块之间的碰撞
 // X Y 表示 16宫格， 将要 移动到的位置
 // model 表示当前模型数据源，将要完成的变化
-function iscollision (x,y,model) {
+function iscollision (newX,newY,model) {
     
     // 模型之间的触碰，在一个固定的位置 已经存在一个被固定的模型时， 活动中的模型则不可以再占用该位置
     // 判断触碰，就是判断移动中的模型《将要移动到的位置》是否已经存在被固定的模型，
@@ -331,11 +511,113 @@ function iscollision (x,y,model) {
 
         // 判断将要移动到的位置，是否已经存在被固定的块元素
         // 如果可以从 Fixed_module 已经被固定的数据源中 取出数据， 则表示该位置已经存在 被固定的模型 返回 true；否则返回false
-        if (Fixed_module[(gridX + BLOCkModel.row) + '_' + (gridY + BLOCkModel.col)]) {
+        // console.log(newY, newX)
+        // console.log((newY + BLOCkModel.y) + '_' + (newX + BLOCkModel.x))
+        if (Fixed_module[(newY + BLOCkModel.y) + '_' + (newX + BLOCkModel.x)]) {
             return true;
         }
     }
     return false;
 }
 
+
+// 判断一行是否被铺满
+function Overspread () {
+
+    // 如果每一行的每一列都存在块元素，则代表该行被铺满
+    // Row 行 Column 列
+    // 使用 for 循环，拿到每一行中每一列的数据
+    for (var i = 0; i < Row; i++) {
+      
+        // 声明一个计数器
+        var count = 0;
+        for (var o = 0; o < Column; o++) {
+            if (Fixed_module[i + '_' + o]) {
+                count++;
+            }
+        }
+
+        if (count == Column) {
+            Delete(i);
+            // console.log('改行已经被铺满了')
+        }
+    }
+}
+
+
+function Delete (line) {
+
+    for (var i = 0; i < Column; i++) {
+        document.getElementById('node').removeChild(Fixed_module[line + '_' + i]);
+        Fixed_module[line + '_' + i] = null;
+    }
+
+    Land(line);
+
+}
+
+
+// 铺满行删除之后，上方固定行下落
+function Land (line) {
+    // 让指定行之上的所有行中的每一列的块元素，向下移动 1 个步长
+    // 遍历指定行之上的所有行
+    for (var i = (line - 1); i >= 0; i--) {
+        // 这一行中每一列的元素
+        for (var o = 0; o < Column; o++) {
+            // 如果当前列没有数据进入下一次循环
+            // continue 语句中断循环中的迭代，如果出现了指定的条件，然后继续循环中的下一个迭代。 
+            if(!Fixed_module[i + '_' + o])continue;
+
+            // 如果当前行的当前列存在块元素的话
+            // 将当前行的数据 给下一行
+            // console.log(Fixed_module[i + '_' + o]);
+            Fixed_module[(i+1) + '_' + o] = Fixed_module[i + '_' + o];
+
+            // console.log(Fixed_module[(i+1) + '_' + o]);
+            // 让当前行移动到下一行
+            Fixed_module[(i+1) + '_' + o].style.top = (i + 1) * distance + 'px';
+
+            // 清理掉平移之前的数据
+            Fixed_module[i + '_' + o] = null;
+        }
+    }
+}
+
+
+// 模型自动下落
+// setInterval() 方法重复调用一个函数或执行一个代码片段，在每次调用之间具有固定的时间间隔。
+function automaticDown () {
+
+    if (timer){
+        clearInterval(timer);
+    };
+
+    timer = setInterval(function () {
+        move(0,1);
+    },600);
+    // 每隔 600毫秒 调用该函数
+}
+
+
+// 判断游戏结束
+function isGameover () {
+    // 当第0行存在块元素 则代表游戏结束
+    for (var i = 0; i < Column; i++) {
+        if (Fixed_module[0 + '_' + i]) {
+            return true;
+        }
+    }
+}
+
+
+function Gameover () {
+
+    // 关闭计时器
+    if (timer){
+        clearInterval(timer);
+    };
+
+    // 弹出游戏结束
+    alert('Game over');
+}
 
