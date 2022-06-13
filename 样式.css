@@ -6,7 +6,8 @@
     /* background-color: pink; */
     /* background: url('./背景.webp') no-repeat; */
     /* background: rgb(119,119,119); */
-    background-image: linear-gradient(to bottom right, #928fb7 , #f0c8d6);
+    /* background-image: linear-gradient(to bottom right, #928fb7 , #f0c8d6); */
+    background-color: aliceblue;
     background-size: 200px 360px;
     border: 1px solid black;
 
@@ -19,7 +20,7 @@
 .inside{
     width: 20px;
     height: 20px;
-    background: url(./方块.webp) no-repeat;
+    background: url(./picture/华夫饼.jpg) no-repeat;
     background-size: 20px 20px;
 
     box-sizing: border-box;
@@ -33,8 +34,10 @@
     width: 20px;
     height: 20px;
 
-    background-color: rgba(0, 0, 0, 0);
-    border: 1px solid rgba(5, 160, 250, 0.559);
+    background: url(./picture/甜甜圈.jpg) no-repeat;
+    background-size: 20px 20px;
+    /* background-color: rgba(0, 0, 0, 0);
+    border: 1px solid rgba(5, 160, 250, 0.559); */
 
     position: absolute;
 }

@@ -217,7 +217,7 @@ var Fixed_module = {};
 // 当 body 加载完成时, 调用该函数
 function call () {
     createModel();
-    OnKeyDown()
+    OnKeyDown();
 }
 
 // 生成对应的模型
@@ -258,6 +258,9 @@ function createModel () {
 
     // 自动降落
     automaticDown();
+
+    // 生成对应的背景图片   
+    // Random_pictures();
 }
 
 // 根据数据源定位块元素的位置
@@ -619,5 +622,23 @@ function Gameover () {
 
     // 弹出游戏结束
     alert('Game over');
+}
+
+
+// 随机生成下落的方块图片
+function Random_pictures () {
+    // 声明一个数组以便存放图片
+    var img_Arry = [
+        './picture/果冻.jpg',
+        './picture/汉堡.jpg',
+        './picture/煎蛋.jpg',
+        './picture/甜甜圈.jpg',
+    ];
+    // 生成一个随机数
+    var index = parseInt(Math.random()*(img_Arry-1));
+    // 得到了随机生成得到图片
+    var currentImage=img_Arry[index];
+    // 生成随机背景
+    document.getElementsByClassName("inside").style.backgroundImage="url("+currentImage+")";
 }
 
